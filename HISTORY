@@ -1,0 +1,9 @@
+0.0.1 - 2017-01-06 - Tiles displayed in HTML2 static tables; hard-coded
+	generation of links and HTML by calling different scripts for different
+  sizes of banners.  LOTS of room for improvement. (CSS, size detection, etc.)
+
+0.0.2 - 2017-01-07 - auto detection of banner size.
+	TODO: Dynamic generation of HTML
+	TODO: CSS style sheep to get rid of horrible HTML2 tables for layout
+	TODO: make it work on size 6
+	TODO: make the tool flexible so tarball doesn't need to be copied around
