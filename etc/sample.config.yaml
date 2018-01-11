@@ -1,0 +1,48 @@
+# Sample config file for banner-preview program.
+# don't be scared: the two commonest use cases are expected to be:
+# (1)  no config file -- produce reasonable output from sliced download
+# (2) configure a single item - the file list
+
+# the default behavior
+# of the program if there is no config supplied.
+
+# Basic assumptions that will likely never change
+general: 
+    border: 24
+    tilesize: 512
+    rowsize: 6
+    htmlfile: index.html
+
+# How the output from the banner slicer is organized (on disk and screen)
+slicer: 
+    slicedir: badges
+    horizontalspacing: 60
+    verticalspacing: 72
+
+# If you don't supply a file list, it will look for slicedir (under pwd)
+input: 
+    # tilelist: 
+    #     - imageformission1.jpg
+    #     - imageformission2.jpg
+    # Where do support files like the tile mask go?  Use the third option
+    # if unsure.
+    # supportdir: /usr/local/etc/banner-preview
+    # supportdir: ~/etc/banner-preview
+    supportdir: etc
+
+# Defaults that will more often be overridden
+
+output: 
+    # Where do the outputs go?
+    outputdirectory: preview
+
+    # What should the preview files be named?
+    fileprefix:  tile-
+    appendsize: true
+    # if you turn both sequence and original name off, filenames will collide
+    appendsequence: true
+    keeporiginalname: false
+
+    # details of the index file
+    title:  "Mission Banner"
+

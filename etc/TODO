@@ -1,7 +1,15 @@
+Rewrite the whole thing in Python (this will require changing config
+format, probably to YAML (still relatively user-friendly.)
+
+
 	TODO: Dynamic generation of HTML
 	TODO: CSS style sheet to get rid of horrible HTML2 tables for layout
-	TODO: make it work on size 6
+	TODO: make it work on size 6 (Done?)
 	TODO: make the tool flexible so tarball doesn't need to be copied around
+				(install once, run anywhere)
 	TODO: allow an imput list of image files to create arbitrary mosaics
 	TODO: Allow for uneven multiples of 6.
 	TODO: generate tarball of all image files for download
+
+Windows support (post-Python conversion)
+
