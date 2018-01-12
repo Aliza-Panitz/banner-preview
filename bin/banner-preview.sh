@@ -163,20 +163,22 @@ setup() {
 }
 
 makeoutputdirectory() {
-    if [ $timestampdirectories ]; then
-        outdir=${outputdirectory}-${NOW}
+    if [ "${timestampdirectories}" == "true" ]; then
+      outdir=${outputdirectory}-${NOW}
     else
       outdir=${outputdirectory}
    fi
    echo "Making directory ${outdir}"
-   mkdir $outdir
+   mkdir -p $outdir
    # error checking needed
 }
 
 main() {
   echo "Doing the work"
   makeoutputdirectory
-  cp ${etc}/head.html ${outdir}/${htmlfile}
+  htmlout=${outdir}/${htmlfile}
+  touch ${htmlout}
+  cat ${etc}/head.html | sed -e "s/\${title}/${title}/" >> ${htmlout}
   ln ${tileframe}  ${outdir}/frame.png
   echo "image files are ${tilelist}"
   # get count
@@ -196,24 +198,40 @@ main() {
     if [ "${image}" == "BLANK" ]; then
       image=${padding}
     fi
+    # TODO All this should be a hlper function
     # pad sequence with leading zeroes
     paddedsequence=$(printf "%03d" ${sequence})
     # All these config options and I'm just ignoring them. #TODO
     # really only need to support 2 options --
     #    fully tagged and numbered -- for easiest canned downloads
     #    fully original filenames -- many banners can share one source dir
-    targetfile="${fileprefix}-${paddedcount}-${paddedsequence}-$(basename ${image})"
-    ln $image $outdir/${targetfile}
+    if [ ${keeporiginalname} ]; then
+      targetfile="$(basename ${image})"
+    else
+      targetfile="${fileprefix}-${paddedcount}-${paddedsequence}-$(basename ${image})"
+    fi
+    ln -f $image $outdir/${targetfile}
     cat ${etc}/one-tile.html | sed -e "s/\${targetfile}/${targetfile}/" >> ${outdir}/${htmlfile}
     sequence=$((sequence+1))
     if [ $col == 6 ]; then
       col=1
       cat ${etc}/end-row.html >> ${outdir}/${htmlfile}
     else
-      col=$((col+1))
+      col=$((col+1))    # not POSIX. 
     fi
   done
-  cat ${etc}/tail.html >> ${outdir}/${htmlfile}
+  # Pad row with blanks
+  # not quite right but not harmful
+  if [ ${col} -gt 1 ]; then
+    image=${padding}
+    targetfile="${fileprefix}-${paddedcount}-${paddedsequence}-$(basename ${image})"
+    ln -f $image $outdir/${targetfile}
+    for place in ${col}..6 ; do
+      cat ${etc}/one-tile.html | sed -e "s/\${targetfile}/${targetfile}/" >> ${outdir}/${htmlfile}
+    done
+    cat ${etc}/end-row.html >> ${outdir}/${htmlfile}
+  fi
+  cat ${etc}/tail.html | sed -e "s/\${author}/${author}/" >> ${outdir}/${htmlfile}
 }
 
 

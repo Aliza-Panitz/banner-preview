@@ -36,9 +36,10 @@
 		# pad if not a multiple of 6; the keyword BLANK in a tilelist will get this
     padding="$supportdir/white.png"
     tileframe="$supportdir/badge-frame.png"
-    # missionorder=true means tile 1 is lower right. 
+    # missionorder=true means tile 1 is lower right. (i.e. slicer output)
     # false means first mission is upper left
-    missionorder=true
+    missionorder=false
+    author=unknown
 
 # Defaults that will more often be overridden
 		verbose=true
