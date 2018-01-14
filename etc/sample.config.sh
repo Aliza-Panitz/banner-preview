@@ -11,7 +11,6 @@
     border=24
     tilesize=512
     rowsize=6
-    htmlfile="index.html"
 
 # How the output from the banner slicer is organized (on disk and screen)
 # slicer:
@@ -50,6 +49,12 @@
     outputdirectory="preview.output"
     timestampdirectories=false			# append timestamp to directory name
 
+    # details of the index file
+    title="Mission Banner"  # Human-friendly
+    # htmlfile="index.html" # build it from ${tag}.html
+    tag="banner"						# one token, no spaces
+														# possible TODO: scrape from config filename
+
     # What should the preview files be named?
     # following the defaults below, the files will be named
     #     tile-30-01 etc. for a 30 image set.
@@ -59,8 +64,8 @@
     appendsequence=true
     sizebeforesequence=true					# lexical sorting groups tiles from banner
     keeporiginalname=false
-    maketarball=true
+    maketarball=false
+    makezip=false
 
-    # details of the index file
-    title="Mission Banner"
+
 

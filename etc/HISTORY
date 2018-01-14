@@ -7,3 +7,6 @@
 	TODO: CSS style sheep to get rid of horrible HTML2 tables for layout
 	TODO: make it work on size 6
 	TODO: make the tool flexible so tarball doesn't need to be copied around
+
+0.1.0 - 2017-01-11 - can make display from arbitrary list of files.
+    New config options added in testing.

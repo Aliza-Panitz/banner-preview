@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#18 mission gold frame! /usr/bin/env bash
 #
 #  banner-preview.sh -- script to package up image files and create
 # an html preview of how they would look as an Ingress mission mosaic.
@@ -84,7 +84,7 @@ defaultconfig() {
     border=24
     tilesize=512
     rowsize=6
-    htmlfile="index.html"
+    # htmlfile="index.html"
 
 # How the output from the banner slicer is organized (on disk and screen)
 # slicer:
@@ -122,7 +122,7 @@ defaultconfig() {
     # What should the preview files be named?
     # following the defaults below, the files will be named
     #     tile-30-01 etc. for a 30 image set.
-    fileprefix="tile-"
+    # fileprefix="tile-"
     appendsize=true
     # if you turn both sequence and original name off, filenames will collide
     appendsequence=true
@@ -132,6 +132,7 @@ defaultconfig() {
 
     # details of the index file
     title="Mission Banner"
+    tag="banner"
 
 }
 
@@ -160,6 +161,8 @@ setup() {
 
   echo "Setting up the program."
   parsecommandline "${@}"
+
+ outputdirectory="${tag}.output"
 }
 
 makeoutputdirectory() {
@@ -176,14 +179,16 @@ makeoutputdirectory() {
 main() {
   echo "Doing the work"
   makeoutputdirectory
+  htmlfile="${tag}.html"
   htmlout=${outdir}/${htmlfile}
-  touch ${htmlout}
-  cat ${etc}/head.html | sed -e "s/\${title}/${title}/" >> ${htmlout}
-  ln ${tileframe}  ${outdir}/frame.png
+  echo "" > ${htmlout}
+  cat ${etc}/head.html | sed -e "s/\${title}/${title}/ ; s/\${tag}/${tag}/" \
+         >> ${htmlout}
+  ln -f ${tileframe}  ${outdir}/frame.png
   echo "image files are ${tilelist}"
   # get count
   count=$(echo ${tilelist} | wc -w)
-  # pad count with leading zeroes
+  # pad count with leading zeroes; no I don't support thousand-mission banners
   paddedcount=$(printf "%03d" ${count})
   if [ ! ${missionorder} ]; then
     revv=""
@@ -205,26 +210,27 @@ main() {
     # really only need to support 2 options --
     #    fully tagged and numbered -- for easiest canned downloads
     #    fully original filenames -- many banners can share one source dir
-    if [ ${keeporiginalname} ]; then
+    if [ "${keeporiginalname}" == "true" ]; then
       targetfile="$(basename ${image})"
     else
-      targetfile="${fileprefix}-${paddedcount}-${paddedsequence}-$(basename ${image})"
+      targetfile="${tag}-${paddedcount}-${paddedsequence}-$(basename ${image})"
     fi
     ln -f $image $outdir/${targetfile}
-    cat ${etc}/one-tile.html | sed -e "s/\${targetfile}/${targetfile}/" >> ${outdir}/${htmlfile}
+    cat ${etc}/one-tile.html | sed -e "s/\${targetfile}/${targetfile}/" \
+           >> ${outdir}/${htmlfile}
     sequence=$((sequence+1))
     if [ $col == 6 ]; then
       col=1
       cat ${etc}/end-row.html >> ${outdir}/${htmlfile}
     else
-      col=$((col+1))    # not POSIX. 
+      col=$((col+1))    # not POSIX.
     fi
   done
   # Pad row with blanks
   # not quite right but not harmful
   if [ ${col} -gt 1 ]; then
     image=${padding}
-    targetfile="${fileprefix}-${paddedcount}-${paddedsequence}-$(basename ${image})"
+    targetfile="${tag}-${paddedcount}-${paddedsequence}-$(basename ${image})"
     ln -f $image $outdir/${targetfile}
     for place in ${col}..6 ; do
       cat ${etc}/one-tile.html | sed -e "s/\${targetfile}/${targetfile}/" >> ${outdir}/${htmlfile}
@@ -232,6 +238,45 @@ main() {
     cat ${etc}/end-row.html >> ${outdir}/${htmlfile}
   fi
   cat ${etc}/tail.html | sed -e "s/\${author}/${author}/" >> ${outdir}/${htmlfile}
+
+  # http://www.paulhammond.org/webkit2png/ - python script
+  # or could have just used firefox -screenshot
+  # webkit2png -T -s 0.06 -o ${outdir}/${tag}-preview ${outdir}/${htmlfile}
+  # webkit2png -F -z 0.25 -o ${outdir}/${tag}-preview ${outdir}/${htmlfile}
+  # webkit2png -s 0.05 -z 0.25 -o ${outdir}/${tag}-preview ${outdir}/${htmlfile}
+  webkit2png -z 0.25 -o ${outdir}/${tag}-preview ${outdir}/${htmlfile}
+
+  # Save a minimal config file
+  echo "tag=${tag}" >> ${outdir}/${tag}.${NOW}.config
+  echo "title=${title}" >> ${outdir}/${tag}.${NOW}.config
+  echo "author=${author}" >> ${outdir}/${tag}.${NOW}.config
+  echo "" >> ${outdir}/${tag}.${NOW}.config
+  echo "tilelist=${tilelist}" >> ${outdir}/${tag}.${NOW}.config
+
+
+  # make the tar ball
+  if [ "${maketarball}" == "true" ]; then
+    tarball="${outdir}/${tag}.tar"
+    rm -f ${tarball}
+    # throws all kinds of errors...
+    tar -rf ${tarball} ${outdir}/*.png
+    tar -rf ${tarball} ${outdir}/*.jpg
+    tar -rf ${tarball} ${outdir}/*.jpeg
+    tar -rf ${tarball} ${outdir}/*.html
+    tar -rf ${tarball} ${outdir}/*.config
+  fi
+
+  if [ "${makezip}" == "true" ]; then
+    zip -q -r -X ${tag}.zip ${outdir}
+  fi
+
+  if [ -d "${repository}" ]; then
+    ln -f ${tag}.zip ${repository}/${tag}.zip
+    ln -f ${outdir}/${tag}-preview-full.png ${repository}/${tag}-preview.png
+    ln -f ${outdir}/${tag}-preview-thumb.png ${repository}/${tag}-preview-thumb.png
+
+  fi
+
 }
 
 

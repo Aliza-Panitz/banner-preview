@@ -1,17 +1,25 @@
 <html>
 <head>
-<title>${title}</title>
+<title>${title} Banner Preview</title>
 </head>
 <body>
-<h3>${title}</h3>
 
 <!--
 <p>This file uses antiquated constructs deprecated in HTML5; use at your
 own risk.  Yes, I need to learn CSS.</p>
 -->
 
+<!-- remove human elements to make cleaner webkit captures
 <p>Click on a tile to view or download</p>
+-->
 <table border=none rules=none bgcolor=black>
 <tr>
-<td colspan=13 bgcolor=black height=72>&nbsp;
+<td style="width:60px;background-color:black">
+<p>.
+<td colspan=12 bgcolor=black height=72>
+<p><font color="red" size="+10">
+${tag} : ${title}
+<tr>
+<td colspan=13 bgcolor=black height=72>
+<p>.</p>
 <tr>
