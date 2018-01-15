@@ -190,14 +190,14 @@ main() {
   count=$(echo ${tilelist} | wc -w)
   # pad count with leading zeroes; no I don't support thousand-mission banners
   paddedcount=$(printf "%03d" ${count})
-  if [ ! ${missionorder} ]; then
+  if [ "${missionorder}" == "true" ]; then
     revv=""
     for img in ${tilelist}; do
       revv="${img} ${revv}"
     done
-    tilelist=revv
+    tilelist="${revv}"
   fi
-  sequence=1
+  sequence=${count}
   col=1
   for image in ${tilelist} ; do
     if [ "${image}" == "BLANK" ]; then
@@ -218,7 +218,7 @@ main() {
     ln -f $image $outdir/${targetfile}
     cat ${etc}/one-tile.html | sed -e "s/\${targetfile}/${targetfile}/" \
            >> ${outdir}/${htmlfile}
-    sequence=$((sequence+1))
+    sequence=$((sequence-1))
     if [ $col == 6 ]; then
       col=1
       cat ${etc}/end-row.html >> ${outdir}/${htmlfile}
@@ -267,6 +267,7 @@ main() {
   fi
 
   if [ "${makezip}" == "true" ]; then
+    rm -f ${tag}.zip
     zip -q -r -X ${tag}.zip ${outdir}
   fi
 
